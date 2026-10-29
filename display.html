@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 8 - Captured User Information</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>User Profile Details</h2>
+                <p>The captured form details submitted from the registration page are shown below.</p>
+            </div>
+
+            <!-- Profile Avatar / Icon & Name Header -->
+            <div id="profileHeader" class="profile-header">
+                <div class="avatar" id="avatarIcon">👤</div>
+                <div>
+                    <h3 id="displayHeaderName" class="display-name">User Name</h3>
+                    <span id="displayHeaderRole" class="badge">Registered User</span>
+                </div>
+            </div>
+
+            <!-- Detail Table -->
+            <div class="table-responsive">
+                <table class="details-table" id="detailsTable">
+                    <tbody>
+                        <tr>
+                            <th><span class="icon">🏷️</span> Full Name</th>
+                            <td id="outName">-</td>
+                        </tr>
+                        <tr>
+                            <th><span class="icon">⚧️</span> Gender</th>
+                            <td id="outGender">-</td>
+                        </tr>
+                        <tr>
+                            <th><span class="icon">📱</span> Mobile Number</th>
+                            <td id="outMobile">-</td>
+                        </tr>
+                        <tr>
+                            <th><span class="icon">✉️</span> Email Address</th>
+                            <td id="outEmail">-</td>
+                        </tr>
+                        <tr>
+                            <th><span class="icon">🏙️</span> City</th>
+                            <td id="outCity">-</td>
+                        </tr>
+                        <tr>
+                            <th><span class="icon">📍</span> State</th>
+                            <td id="outState">-</td>
+                        </tr>
+                        <tr>
+                            <th><span class="icon">🌍</span> Country</th>
+                            <td id="outCountry">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Fallback notification if opened without data -->
+            <div id="noDataAlert" class="alert-box" style="display: none;">
+                <p><strong>Notice:</strong> No submission data found! Please fill out the registration form first.</p>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="button-group">
+                <a href="index.html" class="btn btn-primary">← Fill Form Again / Edit</a>
+                <button type="button" class="btn btn-secondary" onclick="window.print()">🖨️ Print Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to extract parameters from URL or Storage
+        function getUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Check if URL has query parameters
+            if (urlParams.has('fullName') || urlParams.has('email')) {
+                return {
+                    fullName: urlParams.get('fullName') || '',
+                    gender: urlParams.get('gender') || '',
+                    mobile: urlParams.get('mobile') || '',
+                    email: urlParams.get('email') || '',
+                    city: urlParams.get('city') || '',
+                    state: urlParams.get('state') || '',
+                    country: urlParams.get('country') || ''
+                };
+            }
+
+            // Fallback: check sessionStorage or localStorage
+            const stored = sessionStorage.getItem('submittedUserData') || localStorage.getItem('submittedUserData');
+            if (stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch (e) {
+                    console.error('Failed to parse stored user data:', e);
+                }
+            }
+
+            return null;
+        }
+
+        // Populate DOM elements
+        const userData = getUserData();
+
+        if (userData && (userData.fullName || userData.email)) {
+            document.getElementById('outName').textContent = userData.fullName || 'N/A';
+            document.getElementById('outGender').textContent = userData.gender || 'N/A';
+            document.getElementById('outMobile').textContent = userData.mobile || 'N/A';
+            document.getElementById('outEmail').textContent = userData.email || 'N/A';
+            document.getElementById('outCity').textContent = userData.city || 'N/A';
+            document.getElementById('outState').textContent = userData.state || 'N/A';
+            document.getElementById('outCountry').textContent = userData.country || 'N/A';
+
+            document.getElementById('displayHeaderName').textContent = userData.fullName || 'User Profile';
+            
+            // Customize avatar icon depending on gender
+            const avatar = document.getElementById('avatarIcon');
+            if (userData.gender === 'Male') {
+                avatar.textContent = '👨';
+            } else if (userData.gender === 'Female') {
+                avatar.textContent = '👩';
+            } else {
+                avatar.textContent = '🧑';
+            }
+        } else {
+            // Show alert if no data found
+            document.getElementById('profileHeader').style.display = 'none';
+            document.getElementById('detailsTable').style.display = 'none';
+            document.getElementById('noDataAlert').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
