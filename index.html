@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 8 - User Registration Form</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>User Information Form</h2>
+                <p>Fill in your details below. Your information will be displayed on the next page.</p>
+            </div>
+
+            <form id="userForm" novalidate>
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label for="fullName">Full Name <span class="required">*</span></label>
+                    <input type="text" id="fullName" name="fullName" placeholder="e.g. John Doe" required>
+                    <small class="error-msg" id="nameError"></small>
+                </div>
+
+                <!-- Gender -->
+                <div class="form-group">
+                    <label>Gender <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="Male"> Male
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="Female"> Female
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="Other"> Other
+                        </label>
+                    </div>
+                    <small class="error-msg" id="genderError"></small>
+                </div>
+
+                <!-- Mobile Number -->
+                <div class="form-group">
+                    <label for="mobile">Mobile Number <span class="required">*</span></label>
+                    <input type="tel" id="mobile" name="mobile" placeholder="10-digit mobile number (e.g. 9876543210)" maxlength="10" required>
+                    <small class="error-msg" id="mobileError"></small>
+                </div>
+
+                <!-- Email ID -->
+                <div class="form-group">
+                    <label for="email">Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" placeholder="e.g. john.doe@example.com" required>
+                    <small class="error-msg" id="emailError"></small>
+                </div>
+
+                <!-- City -->
+                <div class="form-group">
+                    <label for="city">City <span class="required">*</span></label>
+                    <input type="text" id="city" name="city" placeholder="e.g. Bangalore" required>
+                    <small class="error-msg" id="cityError"></small>
+                </div>
+
+                <!-- State -->
+                <div class="form-group">
+                    <label for="state">State <span class="required">*</span></label>
+                    <input type="text" id="state" name="state" placeholder="e.g. Karnataka" required>
+                    <small class="error-msg" id="stateError"></small>
+                </div>
+
+                <!-- Country -->
+                <div class="form-group">
+                    <label for="country">Country <span class="required">*</span></label>
+                    <select id="country" name="country" required>
+                        <option value="" disabled selected>Select your country</option>
+                        <option value="India">India</option>
+                        <option value="United States">United States</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Germany">Germany</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <small class="error-msg" id="countryError"></small>
+                </div>
+
+                <!-- Actions -->
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Submit &amp; View Details</button>
+                    <button type="reset" class="btn btn-secondary" id="resetBtn">Reset</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('userForm');
+
+        // Validation helper functions
+        function showError(fieldId, message) {
+            const errorElement = document.getElementById(fieldId);
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
+        }
+
+        function clearErrors() {
+            const errors = document.querySelectorAll('.error-msg');
+            errors.forEach(err => {
+                err.textContent = '';
+                err.style.display = 'none';
+            });
+        }
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Stop normal form submission
+            clearErrors();
+
+            let isValid = true;
+
+            // 1. Validate Name
+            const nameInput = document.getElementById('fullName');
+            const nameValue = nameInput.value.trim();
+            if (nameValue === '') {
+                showError('nameError', 'Please enter your full name.');
+                isValid = false;
+            } else if (nameValue.length < 2) {
+                showError('nameError', 'Name must contain at least 2 characters.');
+                isValid = false;
+            }
+
+            // 2. Validate Gender
+            const genderSelected = document.querySelector('input[name="gender"]:checked');
+            let genderValue = '';
+            if (!genderSelected) {
+                showError('genderError', 'Please select your gender.');
+                isValid = false;
+            } else {
+                genderValue = genderSelected.value;
+            }
+
+            // 3. Validate Mobile Number (10 digits)
+            const mobileInput = document.getElementById('mobile');
+            const mobileValue = mobileInput.value.trim();
+            const phonePattern = /^[6-9]\d{9}$/; // standard 10-digit mobile format
+            if (mobileValue === '') {
+                showError('mobileError', 'Please enter your mobile number.');
+                isValid = false;
+            } else if (!phonePattern.test(mobileValue)) {
+                showError('mobileError', 'Please enter a valid 10-digit mobile number.');
+                isValid = false;
+            }
+
+            // 4. Validate Email ID
+            const emailInput = document.getElementById('email');
+            const emailValue = emailInput.value.trim();
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (emailValue === '') {
+                showError('emailError', 'Please enter your email address.');
+                isValid = false;
+            } else if (!emailPattern.test(emailValue)) {
+                showError('emailError', 'Please enter a valid email address (e.g. user@example.com).');
+                isValid = false;
+            }
+
+            // 5. Validate City
+            const cityInput = document.getElementById('city');
+            const cityValue = cityInput.value.trim();
+            if (cityValue === '') {
+                showError('cityError', 'Please enter your city.');
+                isValid = false;
+            }
+
+            // 6. Validate State
+            const stateInput = document.getElementById('state');
+            const stateValue = stateInput.value.trim();
+            if (stateValue === '') {
+                showError('stateError', 'Please enter your state.');
+                isValid = false;
+            }
+
+            // 7. Validate Country
+            const countrySelect = document.getElementById('country');
+            const countryValue = countrySelect.value;
+            if (!countryValue) {
+                showError('countryError', 'Please select your country.');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                return;
+            }
+
+            // Prepare user data object
+            const userData = {
+                fullName: nameValue,
+                gender: genderValue,
+                mobile: mobileValue,
+                email: emailValue,
+                city: cityValue,
+                state: stateValue,
+                country: countryValue
+            };
+
+            // Store in sessionStorage / localStorage for cross-page persistence
+            try {
+                sessionStorage.setItem('submittedUserData', JSON.stringify(userData));
+                localStorage.setItem('submittedUserData', JSON.stringify(userData));
+            } catch (e) {
+                console.warn('Storage not available:', e);
+            }
+
+            // Also encode in URL query parameters so it works seamlessly under file:/// protocol
+            const queryParams = new URLSearchParams(userData).toString();
+            window.location.href = `display.html?${queryParams}`;
+        });
+
+        // Clear error messages on reset
+        form.addEventListener('reset', function() {
+            clearErrors();
+        });
+    </script>
+</body>
+</html>
